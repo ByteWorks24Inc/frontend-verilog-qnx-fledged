@@ -10,8 +10,8 @@ const Dashboard = () => {
     const labs = [
         {
             id: 'verilog',
-            title: 'Verilog Core',
-            desc: 'Hardware description language for digital logic design and RTL verification.',
+            title: 'Verilog',
+            desc: 'Write and simulate digital logic using standard hardware description languages.',
             icon: Binary,
             color: 'from-accent/20 to-indigo-500/5',
             accent: 'text-accent',
@@ -19,8 +19,8 @@ const Dashboard = () => {
         },
         {
             id: 'vhdl',
-            title: 'VHDL Core',
-            desc: 'Hardware description language for digital logic design and RTL verification.',
+            title: 'VHDL',
+            desc: 'Write and simulate digital logic using standard hardware description languages.',
             icon: Binary,
             color: 'from-accent/20 to-indigo-500/5',
             accent: 'text-accent',
@@ -28,8 +28,8 @@ const Dashboard = () => {
         },
         {
             id: 'qnx',
-            title: 'QNX Target',
-            desc: 'Real-time operating system kernel development and deterministic execution.',
+            title: 'QNX',
+            desc: 'Develop and test applications for real-time operating systems.',
             icon: Terminal,
             color: 'from-emerald-600/20 to-emerald-500/5',
             accent: 'text-emerald-400',
@@ -54,19 +54,19 @@ const Dashboard = () => {
                         <div className="flex items-center space-x-4 mb-8">
                             <div className="px-4 py-1.5 bg-bg-surface-elevated border border-border-main rounded-full text-[10px] font-black text-text-muted uppercase tracking-[0.2em] flex items-center">
                                 <Radio size={12} className="mr-3 text-emerald-500 animate-pulse" />
-                                Laboratory Node: 0xA7 - Active
+                                System Status: Online
                             </div>
                             <div className="h-px w-24 bg-gradient-to-r from-border-main to-transparent"></div>
                         </div>
 
                         <h1 className="text-7xl font-black text-text-main tracking-tighter mb-8 leading-[0.9]">
-                            Architectural <br />
-                            <span className="text-accent">Environment.</span>
+                            Your <br />
+                            <span className="text-accent">Workspace.</span>
                         </h1>
 
                         <div className="flex flex-wrap gap-8 items-center">
                             <p className="text-text-muted text-lg font-medium max-w-xl leading-relaxed">
-                                Welcome to BitLab Core. Efficiently synthesize, simulate, and deploy mission-critical engineering logic within parallel sandbox sessions.
+                                Welcome to BitLab. Start writing, simulating, and deploying your code.
                             </p>
                         </div>
                     </motion.div>

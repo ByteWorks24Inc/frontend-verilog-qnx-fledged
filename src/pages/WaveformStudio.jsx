@@ -47,7 +47,7 @@ const WaveformStudio = () => {
                         <Zap size={20} className="fill-emerald-500/20" />
                     </div>
                     <div>
-                        <h1 className="text-xs font-black text-text-main uppercase tracking-[0.4em]">Waveform Explorer</h1>
+                        <h1 className="text-xs font-black text-text-main uppercase tracking-[0.4em]">Waveform Viewer</h1>
                     </div>
                 </div>
                 
@@ -81,7 +81,7 @@ const WaveformStudio = () => {
                                     <div className="p-10 bg-red-500/10 rounded-full mb-10 border border-red-500/20">
                                         <AlertCircle size={48} className="text-red-500" />
                                     </div>
-                                    <h2 className="text-sm font-black text-text-main uppercase tracking-[0.3em]">{status === 'error' ? 'Connection Interrupted' : 'Syncing Core...'}</h2>
+                                    <h2 className="text-sm font-black text-text-main uppercase tracking-[0.3em]">{status === 'error' ? 'Connection Failed' : 'Syncing...'}</h2>
                                     <p className="text-[10px] text-text-muted uppercase tracking-widest mt-3 max-w-sm leading-relaxed">
                                         {error}
                                     </p>

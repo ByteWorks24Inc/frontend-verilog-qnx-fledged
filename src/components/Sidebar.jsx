@@ -100,7 +100,7 @@ const Sidebar = () => {
                         className={`w-full flex items-center py-4 rounded-2xl text-text-muted hover:bg-bg-surface-elevated hover:text-text-main transition-all duration-500 group ${isCollapsed ? 'justify-center' : 'px-6'}`}
                     >
                         {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-                        {!isCollapsed && <span className="ml-5 font-black text-[10px] uppercase tracking-[0.3em]">{isDarkMode ? 'Bright Mode' : 'Dark Mode'}</span>}
+                        {!isCollapsed && <span className="ml-5 font-black text-[10px] uppercase tracking-[0.3em]">{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>}
                     </button>
                     {!isCollapsed && (
                         <div className="p-4 bg-bg-surface rounded-2xl border border-border-main mb-4 flex items-center space-x-3">
@@ -117,7 +117,7 @@ const Sidebar = () => {
                         className={`w-full flex items-center py-4 rounded-2xl text-text-muted hover:bg-red-500/10 hover:text-red-500 transition-all duration-500 group ${isCollapsed ? 'justify-center' : 'px-6'}`}
                     >
                         <LogOut size={20} className="group-hover:-translate-x-1 transition-transform" />
-                        {!isCollapsed && <span className="ml-5 font-black text-[10px] uppercase tracking-[0.3em]">Terminate</span>}
+                        {!isCollapsed && <span className="ml-5 font-black text-[10px] uppercase tracking-[0.3em]">Logout</span>}
                     </button>
                 </div>
             </div>

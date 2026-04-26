@@ -49,7 +49,7 @@ const Register = () => {
                         <ShieldPlus className="w-10 h-10 text-text-inverse" />
                     </motion.div>
                     <h2 className="text-5xl font-black text-text-main mb-3 uppercase tracking-tighter">BITLAB</h2>
-                    <p className="text-text-muted font-black text-[10px] tracking-[0.3em] uppercase">Security Protocol: Initialize</p>
+                    <p className="text-text-muted font-black text-[10px] tracking-[0.3em] uppercase">Create an Account</p>
                 </div>
 
                 <AnimatePresence mode="wait">
@@ -66,8 +66,8 @@ const Register = () => {
                             >
                                 <CheckCircle2 className="w-14 h-14 mb-6" />
                             </motion.div>
-                            <p className="font-black text-xs uppercase tracking-[0.3em] mb-2">Protocol Accepted</p>
-                            <p className="text-[10px] opacity-60 uppercase tracking-widest">Awaiting login handshake...</p>
+                            <p className="font-black text-xs uppercase tracking-[0.3em] mb-2">Registration Successful</p>
+                            <p className="text-[10px] opacity-60 uppercase tracking-widest">Redirecting to login...</p>
                         </motion.div>
                     ) : (
                         <motion.div key="form" exit={{ opacity: 0, scale: 0.9 }}>
@@ -92,7 +92,7 @@ const Register = () => {
                                         required
                                     />
                                     <label className="absolute left-6 top-4 text-text-muted text-[10px] font-black uppercase tracking-[0.2em] transition-all peer-focus:-top-3 peer-focus:left-4 peer-focus:text-accent peer-focus:bg-bg-surface peer-focus:px-2 peer-[:not(:placeholder-shown)]:-top-3 peer-[:not(:placeholder-shown)]:left-4 peer-[:not(:placeholder-shown)]:text-accent peer-[:not(:placeholder-shown)]:bg-bg-surface peer-[:not(:placeholder-shown)]:px-2 pointer-events-none">
-                                        Engineer Identity
+                                        Email Address
                                     </label>
                                 </div>
                                 <div className="relative">
@@ -105,7 +105,7 @@ const Register = () => {
                                         required
                                     />
                                     <label className="absolute left-6 top-4 text-text-muted text-[10px] font-black uppercase tracking-[0.2em] transition-all peer-focus:-top-3 peer-focus:left-4 peer-focus:text-accent peer-focus:bg-bg-surface peer-focus:px-2 peer-[:not(:placeholder-shown)]:-top-3 peer-[:not(:placeholder-shown)]:left-4 peer-[:not(:placeholder-shown)]:text-accent peer-[:not(:placeholder-shown)]:bg-bg-surface peer-[:not(:placeholder-shown)]:px-2 pointer-events-none">
-                                        Security Code
+                                        Password
                                     </label>
                                 </div>
                                 <div className="relative">
@@ -118,7 +118,7 @@ const Register = () => {
                                         required
                                     />
                                     <label className="absolute left-6 top-4 text-text-muted text-[10px] font-black uppercase tracking-[0.2em] transition-all peer-focus:-top-3 peer-focus:left-4 peer-focus:text-accent peer-focus:bg-bg-surface peer-focus:px-2 peer-[:not(:placeholder-shown)]:-top-3 peer-[:not(:placeholder-shown)]:left-4 peer-[:not(:placeholder-shown)]:text-accent peer-[:not(:placeholder-shown)]:bg-bg-surface peer-[:not(:placeholder-shown)]:px-2 pointer-events-none">
-                                        Confirm Code
+                                        Confirm Password
                                     </label>
                                 </div>
 
@@ -133,7 +133,7 @@ const Register = () => {
                                         <Loader2 className="w-6 h-6 animate-spin" />
                                     ) : (
                                         <>
-                                            <span className="tracking-[0.4em] uppercase text-xs font-black">Initialize</span>
+                                            <span className="tracking-[0.4em] uppercase text-xs font-black">Register</span>
                                             <UserCheck className="w-5 h-5 group-hover:scale-110 transition-transform" />
                                         </>
                                     )}
@@ -145,9 +145,9 @@ const Register = () => {
 
                 <div className="mt-12 pt-10 border-t border-border-main text-center">
                     <p className="text-text-muted text-[10px] font-black uppercase tracking-[0.2em]">
-                        Access existing node?{' '}
+                        Already have an account?{' '}
                         <Link to="/login" className="text-accent hover:text-accent-hover transition-colors underline underline-offset-8">
-                            Protocol: Authenticate
+                            Sign In
                         </Link>
                     </p>
                 </div>
