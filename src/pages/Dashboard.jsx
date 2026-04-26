@@ -43,7 +43,7 @@ const Dashboard = () => {
 
             <main className="flex-1 overflow-y-auto relative custom-scrollbar">
 
-                <div className="max-w-7xl mx-auto px-12 py-20 relative z-10">
+                <div className="max-w-7xl mx-auto px-6 md:px-12 py-10 md:py-20 relative z-10">
                     {/* Dashboard Header */}
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
@@ -51,7 +51,7 @@ const Dashboard = () => {
                         transition={{ duration: 0.8 }}
                         className="mb-20"
                     >
-                        <div className="flex items-center space-x-4 mb-8">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-8">
                             <div className="px-4 py-1.5 bg-bg-surface-elevated border border-border-main rounded-full text-[10px] font-black text-text-muted uppercase tracking-[0.2em] flex items-center">
                                 <Radio size={12} className="mr-3 text-emerald-500 animate-pulse" />
                                 System Status: Online
@@ -59,7 +59,7 @@ const Dashboard = () => {
                             <div className="h-px w-24 bg-gradient-to-r from-border-main to-transparent"></div>
                         </div>
 
-                        <h1 className="text-7xl font-black text-text-main tracking-tighter mb-8 leading-[0.9]">
+                        <h1 className="text-5xl md:text-7xl font-black text-text-main tracking-tighter mb-8 leading-[0.9]">
                             Your <br />
                             <span className="text-accent">Workspace.</span>
                         </h1>

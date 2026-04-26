@@ -245,7 +245,7 @@ const CodeLab = () => {
 
             <div className="flex-1 flex flex-col relative overflow-hidden">
                 {/* IDE Header */}
-                <header className="h-14 border-b border-border-main bg-bg-surface backdrop-blur-xl px-8 flex items-center justify-between z-40 relative overflow-hidden">
+                <header className="h-14 border-b border-border-main bg-bg-surface backdrop-blur-xl px-4 md:px-8 flex items-center justify-between z-40 relative overflow-hidden">
 
                     <div className="flex items-center space-x-8">
                         <div className="flex items-center space-x-4">
@@ -257,7 +257,7 @@ const CodeLab = () => {
                             </div>
                         </div>
 
-                        <div className="flex items-center text-[10px] space-x-4">
+                        <div className="hidden sm:flex items-center text-[10px] space-x-4">
                             <div className="h-4 w-px bg-border-main"></div>
                             <span className="text-text-muted font-black uppercase tracking-widest flex items-center">Workspace</span>
                         </div>
@@ -274,7 +274,7 @@ const CodeLab = () => {
                                 className="px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.3em] flex items-center space-x-3 transition-all duration-500 border border-emerald-500/30 bg-emerald-500/5 hover:bg-emerald-500/10 text-emerald-400 group"
                             >
                                 <Activity size={14} className="animate-pulse group-hover:scale-110 transition-transform" />
-                                <span>Open Waveform Studio</span>
+                                <span className="hidden sm:inline">Open Waveform Studio</span>
                             </motion.button>
                         )}
                         <motion.button
@@ -285,16 +285,16 @@ const CodeLab = () => {
                             className={`px-8 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.3em] flex items-center space-x-3 transition-all duration-500 ${loading ? 'bg-bg-surface-elevated text-text-muted' : 'bg-accent text-text-inverse hover:bg-accent-hover'}`}
                         >
                             {loading ? <Loader2 size={14} className="animate-spin" /> : <Zap size={14} className="fill-white" />}
-                            <span>{loading ? 'Processing' : 'Run Code'}</span>
+                            <span className="hidden sm:inline">{loading ? 'Processing' : 'Run Code'}</span>
                         </motion.button>
                     </div>
 
                 </header>
 
                 {/* Workspace */}
-                <main key={lang} className="flex-1 flex overflow-hidden relative">
+                <main key={lang} className="flex-1 flex flex-col md:flex-row overflow-hidden relative">
                     {/* Design Editor */}
-                    <div className="flex-1 flex flex-col min-w-0">
+                    <div className="flex-1 flex flex-col min-w-0 h-1/2 md:h-full">
                         <div className="h-8 px-6 flex items-center bg-bg-surface-elevated border-b border-border-main">
                             <div className="flex items-center space-x-2">
                                 <div className="w-1.5 h-1.5 rounded-full bg-accent"></div>
@@ -322,7 +322,7 @@ const CodeLab = () => {
 
                     {/* Conditional Testbench Editor */}
                     {currentLab.hasTestbench && (
-                        <div className="w-[40%] flex flex-col bg-bg-surface-elevated border-l border-border-main">
+                        <div className="flex-1 md:flex-none md:w-[40%] flex flex-col bg-bg-surface-elevated border-t md:border-t-0 md:border-l border-border-main h-1/2 md:h-full">
                             <div className="h-8 px-6 flex items-center border-b border-border-main">
                                 <span className="text-[9px] font-black text-text-muted uppercase tracking-widest">Testbench</span>
                             </div>
@@ -349,7 +349,7 @@ const CodeLab = () => {
                 <div className={`transition-all duration-500 ${isTerminalOpen ? 'h-[280px]' : 'h-10'} border-t border-border-main bg-bg-surface flex flex-col relative`}>
                     <div
                         onClick={() => setIsTerminalOpen(!isTerminalOpen)}
-                        className="h-10 px-8 flex items-center justify-between cursor-pointer hover:bg-bg-surface-elevated transition-colors relative z-10"
+                        className="h-10 px-4 md:px-8 flex items-center justify-between cursor-pointer hover:bg-bg-surface-elevated transition-colors relative z-10"
                     >
                         <div className="flex items-center space-x-4">
                             <TerminalIcon size={14} className="text-emerald-500" />
@@ -363,7 +363,7 @@ const CodeLab = () => {
                     {isTerminalOpen && (
                         <div
                             ref={terminalRef}
-                            className="flex-1 overflow-y-auto font-mono text-[11px] p-10 text-emerald-400/70 leading-relaxed selection:bg-emerald-500/20 custom-scrollbar relative"
+                            className="flex-1 overflow-y-auto font-mono text-[11px] p-4 md:p-10 text-emerald-400/70 leading-relaxed selection:bg-emerald-500/20 custom-scrollbar relative"
                         >
                             {/* Terminal Scanline Effect */}
                             <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-emerald-500/[0.02] to-transparent bg-[length:100%_4px] opacity-10"></div>

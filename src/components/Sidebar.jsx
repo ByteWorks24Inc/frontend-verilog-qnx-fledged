@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -18,6 +18,18 @@ import { useTheme } from '../context/ThemeContext';
 
 const Sidebar = () => {
     const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            const mobile = window.innerWidth < 768;
+            setIsMobile(mobile);
+            if (mobile) setIsCollapsed(true);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
     const { logout, user } = useAuth();
     const { isDarkMode, toggleTheme } = useTheme();
     const navigate = useNavigate();
@@ -33,9 +45,9 @@ const Sidebar = () => {
     return (
         <motion.aside
             initial={false}
-            animate={{ width: isCollapsed ? 90 : 280 }}
+            animate={{ width: isCollapsed ? (isMobile ? 70 : 90) : (isMobile ? '100vw' : 280) }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="h-screen bg-bg-sidebar border-r border-border-main flex flex-col relative z-50 overflow-hidden transition-colors duration-300"
+            className={`h-screen bg-bg-sidebar border-r border-border-main flex flex-col z-50 overflow-hidden transition-colors duration-300 ${isMobile && !isCollapsed ? 'absolute top-0 left-0 bottom-0 z-[100]' : 'relative'}`}
         >
 
             {/* Collapse Toggle */}

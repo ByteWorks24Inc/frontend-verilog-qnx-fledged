@@ -43,7 +43,7 @@ const Landing = () => {
     return (
         <div className="min-h-screen bg-bg-base text-text-main font-sans selection:bg-accent selection:text-text-inverse overflow-hidden transition-colors duration-300">
             {/* Header */}
-            <header className="absolute top-0 left-0 right-0 p-8 flex justify-between items-center z-50">
+            <header className="absolute top-0 left-0 right-0 p-4 md:p-8 flex justify-between items-center z-50">
                 <motion.div 
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -62,7 +62,7 @@ const Landing = () => {
                     transition={{ duration: 0.8 }}
                     className="flex items-center space-x-6"
                 >
-                    <Link to="/login" className="text-sm font-bold text-text-muted hover:text-accent transition-colors uppercase tracking-widest">
+                    <Link to="/login" className="hidden sm:block text-sm font-bold text-text-muted hover:text-accent transition-colors uppercase tracking-widest">
                         Sign In
                     </Link>
                     <Link to="/register" className="px-6 py-3 bg-accent text-text-inverse text-xs font-black uppercase tracking-[0.2em] rounded-xl hover:bg-accent-hover transition-colors shadow-lg hover:shadow-xl hover:-translate-y-0.5 transform duration-300">
@@ -72,7 +72,7 @@ const Landing = () => {
             </header>
 
             {/* Hero Section */}
-            <main className="relative pt-40 pb-20 px-6 lg:px-12 max-w-7xl mx-auto flex flex-col items-center justify-center min-h-screen z-10">
+            <main className="relative pt-32 md:pt-40 pb-20 px-4 md:px-6 lg:px-12 max-w-7xl mx-auto flex flex-col items-center justify-center min-h-screen z-10">
                 
                 {/* Abstract Background Element */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10 flex items-center justify-center opacity-30">
@@ -82,14 +82,14 @@ const Landing = () => {
                             scale: [1, 1.05, 1] 
                         }}
                         transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
-                        className="w-[800px] h-[800px] border-[1px] border-border-main rounded-full border-dashed"
+                        className="w-[150vw] h-[150vw] md:w-[800px] md:h-[800px] border-[1px] border-border-main rounded-full border-dashed"
                     />
                     <motion.div 
                         animate={{ 
                             rotate: [360, 270, 180, 90, 0],
                         }}
                         transition={{ duration: 70, repeat: Infinity, ease: "linear" }}
-                        className="absolute w-[600px] h-[600px] border-[1px] border-border-main rounded-full"
+                        className="absolute w-[120vw] h-[120vw] md:w-[600px] md:h-[600px] border-[1px] border-border-main rounded-full"
                     />
                 </div>
 
@@ -104,26 +104,26 @@ const Landing = () => {
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-text-muted">High-Performance Computing</span>
                     </motion.div>
 
-                    <motion.h1 variants={itemVariants} className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.9] mb-8">
+                    <motion.h1 variants={itemVariants} className="text-5xl sm:text-6xl md:text-8xl font-black tracking-tighter leading-[0.9] mb-6 md:mb-8">
                         Execute Logic.<br/>
                         <span className="text-text-muted">In the Cloud.</span>
                     </motion.h1>
 
-                    <motion.p variants={itemVariants} className="text-lg md:text-xl text-text-muted font-medium mb-12 max-w-2xl mx-auto leading-relaxed">
+                    <motion.p variants={itemVariants} className="text-base sm:text-lg md:text-xl text-text-muted font-medium mb-10 md:mb-12 max-w-2xl mx-auto leading-relaxed px-4">
                         A minimal, lightning-fast online execution platform for Verilog, VHDL, and QNX x86 architecture. Compile, simulate, and analyze directly in your browser.
                     </motion.p>
 
                     <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6">
                         <button 
                             onClick={() => navigate('/register')}
-                            className="w-full sm:w-auto px-10 py-5 bg-accent text-text-inverse rounded-[2rem] text-xs font-black uppercase tracking-[0.2em] hover:bg-accent-hover transition-all duration-300 hover:scale-105 flex items-center justify-center group"
+                            className="w-full sm:w-auto px-8 md:px-10 py-4 md:py-5 bg-accent text-text-inverse rounded-[2rem] text-xs font-black uppercase tracking-[0.2em] hover:bg-accent-hover transition-all duration-300 hover:scale-105 flex items-center justify-center group"
                         >
                             <span>Start Building</span>
                             <ArrowRight size={16} className="ml-3 group-hover:translate-x-1 transition-transform" />
                         </button>
                         <button 
                             onClick={() => navigate('/login')}
-                            className="w-full sm:w-auto px-10 py-5 bg-bg-surface-elevated border border-border-main text-text-main rounded-[2rem] text-xs font-black uppercase tracking-[0.2em] hover:bg-border-main transition-all duration-300 hover:scale-105 flex items-center justify-center group"
+                            className="w-full sm:w-auto px-8 md:px-10 py-4 md:py-5 bg-bg-surface-elevated border border-border-main text-text-main rounded-[2rem] text-xs font-black uppercase tracking-[0.2em] hover:bg-border-main transition-all duration-300 hover:scale-105 flex items-center justify-center group"
                         >
                             <span>Access Workspace</span>
                             <ChevronRight size={16} className="ml-3 group-hover:translate-x-1 transition-transform opacity-50" />
@@ -137,7 +137,7 @@ const Landing = () => {
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, margin: "-100px" }}
-                    className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-32 w-full max-w-5xl relative z-10"
+                    className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-20 md:mt-32 w-full max-w-5xl relative z-10"
                 >
                     {features.map((feature, idx) => (
                         <motion.div 
@@ -160,12 +160,12 @@ const Landing = () => {
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, margin: "-100px" }}
-                    className="w-full max-w-4xl mt-32 text-center relative z-10"
+                    className="w-full max-w-4xl mt-20 md:mt-32 text-center relative z-10 px-4 md:px-0"
                 >
                     <motion.h2 variants={itemVariants} className="text-3xl md:text-5xl font-black mb-8 tracking-tighter">
                         Why We Built <span className="text-accent">BitLab.</span>
                     </motion.h2>
-                    <motion.p variants={itemVariants} className="text-lg text-text-muted leading-relaxed font-medium">
+                    <motion.p variants={itemVariants} className="text-base sm:text-lg text-text-muted leading-relaxed font-medium">
                         BitLab was created to bridge the gap between heavy, complex hardware design software and the modern web. We provide a seamless, zero-setup environment where engineers, researchers, and students can immediately start writing, simulating, and visualizing hardware logic or real-time OS operations. No complex toolchains, no local installations—just a pure, fast, and minimal execution workspace.
                     </motion.p>
                 </motion.div>
@@ -176,7 +176,7 @@ const Landing = () => {
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true }}
-                    className="w-full max-w-5xl mt-32 pt-10 border-t border-border-main flex flex-col md:flex-row items-center justify-between gap-6 z-10 relative"
+                    className="w-full max-w-5xl mt-20 md:mt-32 pt-10 border-t border-border-main flex flex-col md:flex-row items-center justify-between gap-6 z-10 relative pb-10 md:pb-0"
                 >
                     <motion.div variants={itemVariants} className="flex items-center space-x-2 text-text-muted text-[10px] uppercase tracking-widest font-black">
                         <User size={14} className="text-accent" />
