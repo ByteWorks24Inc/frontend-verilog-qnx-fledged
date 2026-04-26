@@ -5,6 +5,7 @@ import Register from '../pages/Register';
 import Dashboard from '../pages/Dashboard';
 import CodeLab from '../pages/CodeLab';
 import WaveformStudio from '../pages/WaveformStudio';
+import Landing from '../pages/Landing';
 import { ProtectedRoute } from '../components/ProtectedRoute';
 
 
@@ -34,8 +35,9 @@ const AppRouter = () => {
                 element={<WaveformStudio />}
             />
 
+            <Route path="/" element={<Landing />} />
             {/* Fallback */}
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
     );
 };
