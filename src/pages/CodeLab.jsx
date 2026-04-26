@@ -39,31 +39,50 @@ const CodeLab = () => {
 
 
     const labConfig = {
-        verilog: { title: 'Verilog Core', mode: 'verilog', icon: Binary, hasTestbench: true },
-        vhdl: { title: 'VHDL Core', mode: 'vhdl', icon: Binary, hasTestbench: true },
-        qnx: { title: 'QNX Target', mode: 'cpp', icon: TerminalIcon, hasTestbench: false },
+        verilog: { title: 'Verilog', mode: 'verilog', icon: Binary, hasTestbench: true },
+        vhdl: { title: 'VHDL', mode: 'vhdl', icon: Binary, hasTestbench: true },
+        qnx: { title: 'QNX', mode: 'cpp', icon: TerminalIcon, hasTestbench: false },
     };
 
     const currentLab = labConfig[lang] || labConfig.verilog;
 
     useEffect(() => {
-        const savedDesign = localStorage.getItem(`${lang}_design`);
-        const savedTB = localStorage.getItem(`${lang}_tb`);
-        if (savedDesign) setDesignCode(savedDesign);
-        else setDefaultTemplate();
+        const savedDesign = localStorage.getItem(`${lang}_design_v2`);
+        const savedTB = localStorage.getItem(`${lang}_tb_v2`);
+        
+        const templates = getDefaultTemplates(lang);
+        
+        if (savedDesign) {
+            setDesignCode(savedDesign);
+        } else {
+            setDesignCode(templates.design);
+        }
+        
+        if (savedTB) {
+            setTestbenchCode(savedTB);
+        } else {
+            setTestbenchCode(templates.tb);
+        }
     }, [lang]);
 
-    const setDefaultTemplate = () => {
-        if (lang === 'qnx') {
-            setDesignCode('#include <stdio.h>\n\nint main() {\n  printf("Initializing BitLab QNX Engine...\\n");\n  return 0;\n}');
-            setTestbenchCode('');
-        } else if (lang === 'verilog') {
-            setDesignCode('// BitLab Verilog Template\nmodule adder(input [3:0] a, b, output [4:0] sum);\n  assign sum = a + b;\nendmodule');
-            setTestbenchCode('\`timescale 1ns/1ps\n\nmodule tb;\nreg [3:0] a, b;\nwire [4:0] sum;\n\nadder uut (.a(a), .b(b), .sum(sum));\n\ninitial begin\n  $dumpfile("demo.vcd");\n  $dumpvars(0, tb);\n  a = 0; b = 0;\n  #10 a = 3; b = 4;\n  #10 a = 7; b = 8;\n  #10 a = 15; b = 1;\n  #10 $finish;\nend\nendmodule');
-        } else if (lang === 'vhdl') {
-            setDesignCode('-- BitLab VHDL Template\nlibrary ieee;\nuse ieee.std_logic_1164.all;\n\nentity example is\nend example;\n\narchitecture rtl of example is\nbegin\nend rtl;');
-            setTestbenchCode('-- VHDL Testbench\nlibrary ieee;\nuse ieee.std_logic_1164.all;\n\nentity tb is\nend tb;\n\narchitecture sim of tb is\nbegin\n  -- Add $dumpfile("demo.vcd"); and $dumpvars(0, tb); if supported\nend sim;');
+    const getDefaultTemplates = (language) => {
+        if (language === 'qnx') {
+            return {
+                design: '#include <stdio.h>\n\nint main() {\n  printf("Initializing BitLab QNX Engine...\\n");\n  return 0;\n}',
+                tb: ''
+            };
+        } else if (language === 'verilog') {
+            return {
+                design: '// BitLab Verilog Template\nmodule adder(input [3:0] a, b, output [4:0] sum);\n  assign sum = a + b;\nendmodule',
+                tb: '\`timescale 1ns/1ps\n\nmodule tb;\nreg [3:0] a, b;\nwire [4:0] sum;\n\nadder uut (.a(a), .b(b), .sum(sum));\n\ninitial begin\n  $dumpfile("demo.vcd");\n  $dumpvars(0, tb);\n  a = 0; b = 0;\n  #10 a = 3; b = 4;\n  #10 a = 7; b = 8;\n  #10 a = 15; b = 1;\n  #10 $finish;\nend\nendmodule'
+            };
+        } else if (language === 'vhdl') {
+            return {
+                design: '-- BitLab VHDL Template\nlibrary ieee;\nuse ieee.std_logic_1164.all;\n\nentity and_gate is\n  port (\n    a : in std_logic;\n    b : in std_logic;\n    y : out std_logic\n  );\nend and_gate;\n\narchitecture rtl of and_gate is\nbegin\n  y <= a and b;\nend rtl;',
+                tb: '-- VHDL Testbench\nlibrary ieee;\nuse ieee.std_logic_1164.all;\n\nentity tb is\nend tb;\n\narchitecture sim of tb is\n  signal a, b, y : std_logic;\nbegin\n  -- The backend will automatically generate demo.vcd for the waveform\n  uut: entity work.and_gate\n    port map (a => a, b => b, y => y);\n\n  process\n  begin\n    a <= \'0\'; b <= \'0\';\n    wait for 10 ns;\n    a <= \'0\'; b <= \'1\';\n    wait for 10 ns;\n    a <= \'1\'; b <= \'0\';\n    wait for 10 ns;\n    a <= \'1\'; b <= \'1\';\n    wait for 10 ns;\n    wait;\n  end process;\nend sim;'
+            };
         }
+        return { design: '', tb: '' };
     };
 
     const handleSave = (val, type) => {
@@ -160,7 +179,7 @@ const CodeLab = () => {
             const status = (err.response && err.response.status) ? ` [Status: ${err.response.status}]` : '';
             setLogs(prev => [
                 ...prev,
-                `!!! CRITICAL_ERROR: Failed to establish handshake with remote execution kernel.`,
+                `!!! CRITICAL_ERROR: Failed to connect to the server.`,
                 `!!! DETAIL: ${errorMsg}${status}`,
                 lang === 'qnx' ? `*** PLEASE CONTACT MODERATOR TO TURN ON THE QNX VM SERVER TO ACCESS ***` : ''
             ].filter(Boolean));
@@ -172,7 +191,7 @@ const CodeLab = () => {
     // Native Waveform Studio Handshake
     const openWaveformStudio = () => {
         if (!vcdText) {
-            setLogs(prev => [...prev, `*** ERROR: No simulation trace data found. Run Execute Core first. ***`]);
+            setLogs(prev => [...prev, `*** ERROR: No simulation trace data found. Run Code first. ***`]);
             return;
         }
 
@@ -266,7 +285,7 @@ const CodeLab = () => {
                             className={`px-8 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.3em] flex items-center space-x-3 transition-all duration-500 ${loading ? 'bg-bg-surface-elevated text-text-muted' : 'bg-accent text-text-inverse hover:bg-accent-hover'}`}
                         >
                             {loading ? <Loader2 size={14} className="animate-spin" /> : <Zap size={14} className="fill-white" />}
-                            <span>{loading ? 'Processing' : 'Execute Core'}</span>
+                            <span>{loading ? 'Processing' : 'Run Code'}</span>
                         </motion.button>
                     </div>
 
@@ -280,7 +299,7 @@ const CodeLab = () => {
                             <div className="flex items-center space-x-2">
                                 <div className="w-1.5 h-1.5 rounded-full bg-accent"></div>
                                 <span className="text-[9px] font-black text-text-muted uppercase tracking-widest">
-                                    {lang === 'qnx' ? 'Source Console' : 'Logic Workspace'}
+                                    Code Editor
                                 </span>
                             </div>
                         </div>
@@ -364,7 +383,7 @@ const CodeLab = () => {
                                 {loading && (
                                     <div className="flex items-center space-x-4 mt-4">
                                         <span className="w-1.5 h-4 bg-accent animate-pulse"></span>
-                                        <span className="text-accent font-black text-[10px] uppercase tracking-[0.3em]">Processing Logic Vectors...</span>
+                                        <span className="text-accent font-black text-[10px] uppercase tracking-[0.3em]">Running Code...</span>
                                     </div>
                                 )}
                                 {/* Integrated view removed in favor of professional popup */}
