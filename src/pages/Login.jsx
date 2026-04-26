@@ -27,31 +27,24 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center relative bg-[#030712] px-4 overflow-hidden">
-            {/* Dynamic Background */}
-            <div className="absolute top-0 left-0 w-full h-full">
-                <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-accent/10 blur-[160px] rounded-full animate-pulse"></div>
-                <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-blue-600/5 blur-[160px] rounded-full"></div>
-            </div>
+        <div className="min-h-screen flex items-center justify-center relative bg-bg-base px-4 overflow-hidden transition-colors duration-300">
 
             <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
-                className="max-w-md w-full glass-card p-12 relative z-10 overflow-hidden"
+                className="max-w-md w-full glass-card p-12 relative z-10 overflow-hidden bg-bg-surface border border-border-main"
             >
-                {/* Shimmer Overlay */}
-                <div className="absolute inset-0 shimmer pointer-events-none opacity-20"></div>
 
                 <div className="flex flex-col items-center mb-12 relative">
                     <motion.div
                         whileHover={{ scale: 1.1, rotate: 12 }}
-                        className="w-20 h-20 bg-gradient-to-br from-accent to-indigo-600 rounded-[2rem] flex items-center justify-center shadow-[0_0_40px_rgba(139,92,246,0.25)] mb-8"
+                        className="w-20 h-20 bg-accent rounded-[2rem] flex items-center justify-center shadow-md mb-8"
                     >
-                        <ShieldCheck className="w-10 h-10 text-white" />
+                        <ShieldCheck className="w-10 h-10 text-text-inverse" />
                     </motion.div>
-                    <h2 className="text-5xl logo-shimmer mb-3 uppercase">BITLAB</h2>
-                    <div className="flex items-center space-x-2 text-slate-500 font-bold text-[10px] tracking-[0.3em] uppercase">
+                    <h2 className="text-5xl font-black text-text-main mb-3 uppercase tracking-tighter">BITLAB</h2>
+                    <div className="flex items-center space-x-2 text-text-muted font-bold text-[10px] tracking-[0.3em] uppercase">
                         <Zap size={10} className="text-accent" />
                         <span>Secure Engineering Interface</span>
                     </div>
@@ -80,7 +73,7 @@ const Login = () => {
                             placeholder=" "
                             required
                         />
-                        <label className="absolute left-6 top-4 text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] transition-all peer-focus:-top-3 peer-focus:left-4 peer-focus:text-accent peer-focus:bg-[#0b0f1a] peer-focus:px-2 peer-[:not(:placeholder-shown)]:-top-3 peer-[:not(:placeholder-shown)]:left-4 peer-[:not(:placeholder-shown)]:text-accent peer-[:not(:placeholder-shown)]:bg-[#0b0f1a] peer-[:not(:placeholder-shown)]:px-2 pointer-events-none">
+                        <label className="absolute left-6 top-4 text-text-muted text-[10px] font-black uppercase tracking-[0.2em] transition-all peer-focus:-top-3 peer-focus:left-4 peer-focus:text-accent peer-focus:bg-bg-surface peer-focus:px-2 peer-[:not(:placeholder-shown)]:-top-3 peer-[:not(:placeholder-shown)]:left-4 peer-[:not(:placeholder-shown)]:text-accent peer-[:not(:placeholder-shown)]:bg-bg-surface peer-[:not(:placeholder-shown)]:px-2 pointer-events-none">
                             Engineer Identity
                         </label>
                     </div>
@@ -93,7 +86,7 @@ const Login = () => {
                             placeholder=" "
                             required
                         />
-                        <label className="absolute left-6 top-4 text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] transition-all peer-focus:-top-3 peer-focus:left-4 peer-focus:text-accent peer-focus:bg-[#0b0f1a] peer-focus:px-2 peer-[:not(:placeholder-shown)]:-top-3 peer-[:not(:placeholder-shown)]:left-4 peer-[:not(:placeholder-shown)]:text-accent peer-[:not(:placeholder-shown)]:bg-[#0b0f1a] peer-[:not(:placeholder-shown)]:px-2 pointer-events-none">
+                        <label className="absolute left-6 top-4 text-text-muted text-[10px] font-black uppercase tracking-[0.2em] transition-all peer-focus:-top-3 peer-focus:left-4 peer-focus:text-accent peer-focus:bg-bg-surface peer-focus:px-2 peer-[:not(:placeholder-shown)]:-top-3 peer-[:not(:placeholder-shown)]:left-4 peer-[:not(:placeholder-shown)]:text-accent peer-[:not(:placeholder-shown)]:bg-bg-surface peer-[:not(:placeholder-shown)]:px-2 pointer-events-none">
                             Access Credentials
                         </label>
                     </div>
@@ -116,10 +109,10 @@ const Login = () => {
                     </motion.button>
                 </form>
 
-                <div className="mt-12 pt-10 border-t border-white/[0.03] text-center">
-                    <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em]">
+                <div className="mt-12 pt-10 border-t border-border-main text-center">
+                    <p className="text-text-muted text-[10px] font-black uppercase tracking-[0.2em]">
                         New to the system?{' '}
-                        <Link to="/register" className="text-accent hover:text-white transition-colors underline decoration-accent/30 underline-offset-8">
+                        <Link to="/register" className="text-accent hover:text-accent-hover transition-colors underline underline-offset-8">
                             Protocol: Initialize
                         </Link>
                     </p>
