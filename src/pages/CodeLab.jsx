@@ -136,6 +136,8 @@ const CodeLab = () => {
     const [qnxWorkerStatus, setQnxWorkerStatus] = useState('unknown'); // 'checking' | 'online' | 'offline'
     const terminalRef = useRef(null);
     const studioWindowRef = useRef(null);
+    const designEditorRef = useRef(null);     // Monaco editor instance
+    const decorationsRef = useRef([]);         // current decoration IDs
 
     const labConfig = {
         verilog: { title: 'Verilog', mode: 'verilog', icon: Binary, hasTestbench: true },
@@ -186,6 +188,31 @@ const CodeLab = () => {
         return { design: '', tb: '' };
     };
 
+    // Clear any existing red-line decorations
+    const clearDecorations = () => {
+        if (designEditorRef.current) {
+            decorationsRef.current = designEditorRef.current.deltaDecorations(decorationsRef.current, []);
+        }
+    };
+
+    // Highlight a specific line number red in the design editor
+    const highlightErrorLine = (lineNum) => {
+        if (!designEditorRef.current || !lineNum) return;
+        decorationsRef.current = designEditorRef.current.deltaDecorations(decorationsRef.current, [
+            {
+                range: new window.monaco.Range(lineNum, 1, lineNum, 1),
+                options: {
+                    isWholeLine: true,
+                    className: 'monaco-error-line-highlight',
+                    glyphMarginClassName: 'monaco-error-glyph',
+                    overviewRuler: { color: '#ef4444', position: 4 },
+                },
+            },
+        ]);
+        // Scroll editor to the error line
+        designEditorRef.current.revealLineInCenter(lineNum);
+    };
+
     const handleSave = (val, type) => {
         if (type === 'design') {
             setDesignCode(val);
@@ -213,6 +240,7 @@ const CodeLab = () => {
         setLoading(true);
         setVcdText(null);
         setLogEntries([]);
+        clearDecorations();
         pushLog(`>>> [INIT] Initializing ${lang.toUpperCase()} execution environment...`);
 
         try {
@@ -242,6 +270,9 @@ const CodeLab = () => {
                             }
                             if (res.data.errorLine) {
                                 pushLog(`!!! COMPILATION ERROR: ${res.data.errorLine}`);
+                                // Extract the numeric line number and highlight it
+                                const lineMatch = res.data.errorLine.match(/(\d+)/);
+                                if (lineMatch) highlightErrorLine(parseInt(lineMatch[1], 10));
                             }
                             if (res.data.vcdBase64) {
                                 const rawVcd = atob(res.data.vcdBase64);
@@ -388,8 +419,9 @@ const CodeLab = () => {
                                 theme={isDarkMode ? 'vs-dark' : 'light'}
                                 language={currentLab.mode}
                                 value={designCode}
-                                onChange={(val) => handleSave(val, 'design')}
-                                options={{ fontSize: 14, minimap: { enabled: false }, scrollBeyondLastLine: false, padding: { top: 20 } }}
+                                onChange={(val) => { handleSave(val, 'design'); clearDecorations(); }}
+                                onMount={(editor) => { designEditorRef.current = editor; }}
+                                options={{ fontSize: 14, minimap: { enabled: false }, scrollBeyondLastLine: false, padding: { top: 20 }, glyphMargin: true }}
                             />
                         </div>
                     </div>
