@@ -250,9 +250,9 @@ const CodeLab = () => {
 
         setLoading(true);
         setVcdText(null);
-        setLogEntries([]);
         clearDecorations();
-        pushLog(`>>> [INIT] Initializing ${lang.toUpperCase()} execution environment...`);
+        // Reset terminal and push the first line atomically so it never shows stale logs
+        setLogEntries([parseLogLine(`>>> [INIT] Initializing ${lang.toUpperCase()} execution environment...`)]);
 
         try {
             const response = await api.post('/execute', {
