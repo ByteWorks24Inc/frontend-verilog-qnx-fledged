@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
 import { authService } from '../services/auth';
-import { UserPlus, Loader2, CheckCircle2, UserCheck, ShieldPlus } from 'lucide-react';
+import { Loader2, CheckCircle2, UserCheck, ShieldPlus, Zap } from 'lucide-react';
 
 const Register = () => {
     const [email, setEmail] = useState('');
@@ -37,11 +37,12 @@ const Register = () => {
             <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
+                transition={{ duration: 0.8, ease: 'easeOut' }}
                 className="max-w-md w-full glass-card p-12 relative z-10 overflow-hidden bg-bg-surface border border-border-main"
             >
 
-                <div className="flex flex-col items-center mb-12">
+                {/* Header */}
+                <div className="flex flex-col items-center mb-12 relative">
                     <motion.div
                         whileHover={{ scale: 1.1, rotate: -8 }}
                         className="w-20 h-20 bg-accent rounded-[2rem] flex items-center justify-center shadow-md mb-8"
@@ -49,9 +50,13 @@ const Register = () => {
                         <ShieldPlus className="w-10 h-10 text-text-inverse" />
                     </motion.div>
                     <h2 className="text-5xl font-black text-text-main mb-3 uppercase tracking-tighter">BITLAB</h2>
-                    <p className="text-text-muted font-black text-[10px] tracking-[0.3em] uppercase">Create an Account</p>
+                    <div className="flex items-center space-x-2 text-text-muted font-bold text-[10px] tracking-[0.3em] uppercase">
+                        <Zap size={10} className="text-accent" />
+                        <span>Create Account</span>
+                    </div>
                 </div>
 
+                {/* Success State */}
                 <AnimatePresence mode="wait">
                     {success ? (
                         <motion.div
@@ -71,18 +76,25 @@ const Register = () => {
                         </motion.div>
                     ) : (
                         <motion.div key="form" exit={{ opacity: 0, scale: 0.9 }}>
-                            {error && (
-                                <motion.div
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    className="bg-red-500/5 border border-red-500/10 text-red-500 p-4 rounded-2xl mb-8 text-[10px] font-black tracking-widest text-center uppercase"
-                                >
-                                    {error}
-                                </motion.div>
-                            )}
+
+                            {/* Error Banner */}
+                            <AnimatePresence>
+                                {error && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0 }}
+                                        className="bg-red-500/10 border border-red-500/20 text-red-500 p-4 rounded-2xl mb-8 text-[11px] font-black tracking-widest text-center uppercase"
+                                    >
+                                        {error}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
 
                             <form onSubmit={handleSubmit} className="space-y-8">
-                                <div className="relative">
+
+                                {/* Email */}
+                                <div className="relative group">
                                     <input
                                         type="email"
                                         value={email}
@@ -95,7 +107,9 @@ const Register = () => {
                                         Email Address
                                     </label>
                                 </div>
-                                <div className="relative">
+
+                                {/* Password */}
+                                <div className="relative group">
                                     <input
                                         type="password"
                                         value={password}
@@ -108,7 +122,9 @@ const Register = () => {
                                         Password
                                     </label>
                                 </div>
-                                <div className="relative">
+
+                                {/* Confirm Password */}
+                                <div className="relative group">
                                     <input
                                         type="password"
                                         value={confirmPassword}
@@ -122,6 +138,7 @@ const Register = () => {
                                     </label>
                                 </div>
 
+                                {/* Submit Button */}
                                 <motion.button
                                     whileHover={{ scale: 1.02, translateY: -2 }}
                                     whileTap={{ scale: 0.98 }}
@@ -143,6 +160,7 @@ const Register = () => {
                     )}
                 </AnimatePresence>
 
+                {/* Footer Link */}
                 <div className="mt-12 pt-10 border-t border-border-main text-center">
                     <p className="text-text-muted text-[10px] font-black uppercase tracking-[0.2em]">
                         Already have an account?{' '}
