@@ -351,6 +351,17 @@ const CodeLab = () => {
         }, 1000);
     };
 
+    const downloadVcd = () => {
+        if (!vcdText) return;
+        const blob = new Blob([vcdText], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `bitlab_${lang}_waveform.vcd`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
     useEffect(() => {
         const handleKeyPress = (e) => {
             if (e.ctrlKey && e.key === 'Enter') executeCode();
@@ -385,7 +396,21 @@ const CodeLab = () => {
                         </div>
                     </div>
 
-                    <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-2">
+                        {vcdText && (
+                            <motion.button
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={downloadVcd}
+                                title="Download VCD waveform file"
+                                className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.3em] flex items-center space-x-2 transition-all duration-300 border border-border-main bg-bg-surface-elevated hover:bg-bg-surface text-text-muted hover:text-text-main"
+                            >
+                                <Download size={13} />
+                                <span className="hidden sm:inline">Download VCD</span>
+                            </motion.button>
+                        )}
                         {vcdText && (
                             <motion.button
                                 initial={{ opacity: 0, x: 20 }}
