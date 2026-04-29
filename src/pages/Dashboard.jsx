@@ -2,123 +2,86 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
-import { Binary, Terminal, Activity, Zap, Layers, Wind, Radio } from 'lucide-react';
+import { Binary, Terminal, ArrowRight, Radio } from 'lucide-react';
+
+const labs = [
+    {
+        id: 'verilog',
+        title: 'Verilog',
+        desc: 'Simulate digital logic with HDL.',
+        icon: Binary,
+        path: '/editor/verilog',
+    },
+    {
+        id: 'vhdl',
+        title: 'VHDL',
+        desc: 'VHSIC hardware description language.',
+        icon: Binary,
+        path: '/editor/vhdl',
+    },
+    {
+        id: 'qnx',
+        title: 'QNX',
+        desc: 'Real-time OS application development.',
+        icon: Terminal,
+        path: '/editor/qnx',
+    },
+];
 
 const Dashboard = () => {
     const navigate = useNavigate();
 
-    const labs = [
-        {
-            id: 'verilog',
-            title: 'Verilog',
-            desc: 'Write and simulate digital logic using standard hardware description languages.',
-            icon: Binary,
-            color: 'from-accent/20 to-indigo-500/5',
-            accent: 'text-accent',
-            path: '/editor/verilog'
-        },
-        {
-            id: 'vhdl',
-            title: 'VHDL',
-            desc: 'Write and simulate digital logic using standard hardware description languages.',
-            icon: Binary,
-            color: 'from-accent/20 to-indigo-500/5',
-            accent: 'text-accent',
-            path: '/editor/vhdl'
-        },
-        {
-            id: 'qnx',
-            title: 'QNX',
-            desc: 'Develop and test applications for real-time operating systems.',
-            icon: Terminal,
-            color: 'from-emerald-600/20 to-emerald-500/5',
-            accent: 'text-emerald-400',
-            path: '/editor/qnx'
-        }
-    ];
-
     return (
-        <div className="flex h-screen bg-bg-base overflow-hidden transition-colors duration-300">
+        <div className="flex h-screen bg-bg-base overflow-hidden">
             <Sidebar />
 
-            <main className="flex-1 overflow-y-auto relative custom-scrollbar">
+            <main className="flex-1 overflow-y-auto custom-scrollbar">
+                <div className="max-w-4xl mx-auto px-8 py-16">
 
-                <div className="max-w-7xl mx-auto px-6 md:px-12 py-10 md:py-20 relative z-10">
-                    {/* Dashboard Header */}
+                    {/* Header */}
                     <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.8 }}
-                        className="mb-20"
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                        className="mb-14"
                     >
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-8">
-                            <div className="px-4 py-1.5 bg-bg-surface-elevated border border-border-main rounded-full text-[10px] font-black text-text-muted uppercase tracking-[0.2em] flex items-center">
-                                <Radio size={12} className="mr-3 text-emerald-500 animate-pulse" />
-                                System Status: Online
-                            </div>
-                            <div className="h-px w-24 bg-gradient-to-r from-border-main to-transparent"></div>
+                        <div className="flex items-center gap-2 mb-6">
+                            <Radio size={10} className="text-emerald-500 animate-pulse" />
+                            <span className="text-[10px] text-text-muted uppercase tracking-[0.3em] font-bold">Online</span>
                         </div>
-
-                        <h1 className="text-5xl md:text-7xl font-black text-text-main tracking-tighter mb-8 leading-[0.9]">
-                            Your <br />
-                            <span className="text-accent">Workspace.</span>
+                        <h1 className="text-4xl md:text-5xl font-black text-text-main tracking-tight leading-tight mb-3">
+                            Your Workspace
                         </h1>
-
-                        <div className="flex flex-wrap gap-8 items-center">
-                            <p className="text-text-muted text-lg font-medium max-w-xl leading-relaxed">
-                                Welcome to BitLab. Start writing, simulating, and deploying your code.
-                            </p>
-                        </div>
+                        <p className="text-text-muted text-sm max-w-md leading-relaxed">
+                            Select a lab to start writing, simulating, and testing your code.
+                        </p>
                     </motion.div>
 
-                    {/* Cards Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                    {/* Lab Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {labs.map((lab, idx) => (
-                            <motion.div
+                            <motion.button
                                 key={lab.id}
-                                initial={{ opacity: 0, y: 40 }}
+                                initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: idx * 0.15, duration: 0.8 }}
-                                whileHover={{ y: -8 }}
+                                transition={{ delay: idx * 0.08, duration: 0.4 }}
+                                whileHover={{ y: -4 }}
+                                whileTap={{ scale: 0.98 }}
                                 onClick={() => navigate(lab.path)}
-                                className={`group cursor-pointer glass-card p-10 bg-bg-surface hover:bg-bg-surface-elevated transition-all duration-700 relative overflow-hidden`}
+                                className="group text-left p-6 bg-bg-surface border border-border-main rounded-2xl hover:border-accent/40 hover:bg-bg-surface-elevated transition-all duration-300 flex flex-col"
                             >
-                                <div className="w-16 h-16 bg-bg-surface-elevated rounded-3xl flex items-center justify-center mb-12 border border-border-main group-hover:scale-110 group-hover:rotate-6 transition-all duration-700">
-                                    <lab.icon className="text-accent" size={32} />
+                                <div className="w-10 h-10 bg-bg-surface-elevated border border-border-main rounded-xl flex items-center justify-center mb-5 group-hover:border-accent/30 transition-colors">
+                                    <lab.icon size={18} className="text-text-muted group-hover:text-accent transition-colors" />
                                 </div>
-
-                                <div className="space-y-4 mb-12">
-                                    <h3 className="text-3xl font-black text-text-main tracking-tighter group-hover:translate-x-1 transition-transform">{lab.title}</h3>
-                                    <p className="text-text-muted font-medium leading-relaxed text-sm transition-colors">
-                                        {lab.desc}
-                                    </p>
+                                <h3 className="text-base font-black text-text-main tracking-tight mb-1">{lab.title}</h3>
+                                <p className="text-xs text-text-muted leading-relaxed flex-1">{lab.desc}</p>
+                                <div className="flex items-center gap-1.5 mt-5 text-[10px] font-bold text-text-muted group-hover:text-accent uppercase tracking-widest transition-colors">
+                                    <span>Open</span>
+                                    <ArrowRight size={11} className="group-hover:translate-x-0.5 transition-transform" />
                                 </div>
-
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center space-x-3 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
-                                        <Layers size={14} className="text-accent" />
-                                        <span className="text-[10px] font-black text-accent uppercase tracking-[0.2em]">Ready</span>
-                                    </div>
-                                    <div className="flex items-center text-text-muted group-hover:text-accent font-black text-[10px] uppercase tracking-[0.3em] transition-colors">
-                                        <span className="mr-3">Launch</span>
-                                        <Zap size={14} className="group-hover:fill-accent transition-all animate-pulse" />
-                                    </div>
-                                </div>
-                            </motion.div>
+                            </motion.button>
                         ))}
                     </div>
-
-                    {/* System Status Footer */}
-                    <motion.footer
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.8 }}
-                        className="mt-32 pt-12 border-t border-border-main flex flex-col md:flex-row justify-between items-center gap-6"
-                    >
-                        <div className="flex items-center space-x-8 text-[9px] font-black text-text-muted uppercase tracking-[0.3em]">
-                            <span className="text-border-main uppercase font-black text-[20px] select-none">BitLab™</span>
-                        </div>
-                    </motion.footer>
                 </div>
             </main>
         </div>

@@ -146,6 +146,17 @@ const CodeLab = () => {
     };
     const currentLab = labConfig[lang] || labConfig.verilog;
 
+    // ── Reset state whenever the user switches language tabs ──
+    useEffect(() => {
+        setVcdText(null);
+        setLogEntries([]);
+        setLoading(false);
+        // Clear editor decorations from the previous session
+        if (designEditorRef.current && decorationsRef.current.length) {
+            decorationsRef.current = designEditorRef.current.deltaDecorations(decorationsRef.current, []);
+        }
+    }, [lang]);
+
     // ── QNX worker health check ──
     useEffect(() => {
         if (lang !== 'qnx') return;
