@@ -4,8 +4,8 @@ export const authService = {
     login: async (email, password) => {
         const response = await api.post('/auth/login', { email, password });
         if (response.data) {
-            // Generate Basic Auth token as requested: base64(email:password)
-            const token = btoa(`${email}:${password}`);
+            // response.data is the JWT token
+            const token = response.data;
             localStorage.setItem('authToken', token);
             localStorage.setItem('userEmail', email);
             return response.data;
