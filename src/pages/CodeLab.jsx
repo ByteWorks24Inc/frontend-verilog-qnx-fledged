@@ -5,6 +5,8 @@ import Editor from '@monaco-editor/react';
 import Sidebar from '../components/Sidebar';
 import api from '../services/api';
 import { useTheme } from '../context/ThemeContext';
+import CanvasWaveform from '../components/CanvasWaveform';
+import { parseVCD } from '../utils/VCDParserCore';
 import {
     Play,
     Terminal as TerminalIcon,
@@ -46,6 +48,8 @@ function parseLogLine(raw) {
     // Match [STAGE:XXX] prefix
     const m = raw.match(/^\[STAGE:([A-Z]+)\]\s*(.*)$/);
     if (m) return { type: 'stage', tag: m[1], text: m[2] };
+    // Program stdout from the executed code
+    if (raw.startsWith('[STDOUT]')) return { type: 'stdout', text: raw.replace(/^\[STDOUT\]\s?/, '') };
     if (raw.startsWith('!!!')) return { type: 'error', text: raw };
     if (raw.startsWith('>>>')) return { type: 'init', text: raw };
     if (raw.startsWith('[QUEUED]')) return { type: 'info', text: raw };
@@ -107,6 +111,41 @@ function TerminalLine({ entry, index }) {
     );
 }
 
+// ─── Program output block (stdout from executed code) ───────────────────────
+function OutputBlock({ lines }) {
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="my-2 rounded-xl border border-emerald-500/30 bg-emerald-500/[0.07] overflow-hidden"
+        >
+            <div className="px-3 py-1.5 border-b border-emerald-500/20 flex items-center gap-2">
+                <TerminalIcon size={11} className="text-emerald-400" />
+                <span className="text-[9px] font-black uppercase tracking-[0.25em] text-emerald-400">Program Output</span>
+            </div>
+            <pre className="px-4 py-2.5 text-[12px] leading-relaxed font-mono text-emerald-200 whitespace-pre-wrap break-words">
+{lines.map((l) => l.text).join('\n')}
+            </pre>
+        </motion.div>
+    );
+}
+
+function renderLogEntries(entries) {
+    const nodes = [];
+    for (let i = 0; i < entries.length; i++) {
+        if (entries[i].type === 'stdout') {
+            const group = [];
+            let j = i;
+            while (j < entries.length && entries[j].type === 'stdout') group.push(entries[j++]);
+            nodes.push(<OutputBlock key={`out-${i}`} lines={group} />);
+            i = j - 1;
+        } else {
+            nodes.push(<TerminalLine key={i} entry={entries[i]} index={i} />);
+        }
+    }
+    return nodes;
+}
+
 // ─── QNX Worker Banner ────────────────────────────────────────────────────────
 function QnxWorkerBanner({ status }) {
     if (status === 'online') return (
@@ -133,6 +172,7 @@ const CodeLab = () => {
     const [loading, setLoading] = useState(false);
     const [isTerminalOpen, setIsTerminalOpen] = useState(true);
     const [vcdText, setVcdText] = useState(null);
+    const [consoleTab, setConsoleTab] = useState('console'); // 'console' | 'waveform'
     const [qnxWorkerStatus, setQnxWorkerStatus] = useState('unknown'); // 'checking' | 'online' | 'offline'
     const terminalRef = useRef(null);
     const studioWindowRef = useRef(null);
@@ -146,9 +186,29 @@ const CodeLab = () => {
     };
     const currentLab = labConfig[lang] || labConfig.verilog;
 
+    // Parsed VCD for the inline waveform tab (no popup required)
+    const waveformData = React.useMemo(() => {
+        if (!vcdText) return { signals: [], maxTime: 0 };
+        try {
+            return parseVCD(vcdText);
+        } catch (err) {
+            console.error('VCD parse failed', err);
+            return { signals: [], maxTime: 0 };
+        }
+    }, [vcdText]);
+
+    // If the trace produced no usable signals, fall back to the console tab
+    // so the panel never ends up blank.
+    useEffect(() => {
+        if (consoleTab === 'waveform' && waveformData.signals.length === 0) {
+            setConsoleTab('console');
+        }
+    }, [consoleTab, waveformData]);
+
     // ── Reset state whenever the user switches language tabs ──
     useEffect(() => {
         setVcdText(null);
+        setConsoleTab('console');
         setLogEntries([]);
         setLoading(false);
         // Clear editor decorations from the previous session
@@ -250,6 +310,7 @@ const CodeLab = () => {
 
         setLoading(true);
         setVcdText(null);
+        setConsoleTab('console');
         clearDecorations();
         // Reset terminal and push the first line atomically so it never shows stale logs
         setLogEntries([parseLogLine(`>>> [INIT] Initializing ${lang.toUpperCase()} execution environment...`)]);
@@ -288,11 +349,14 @@ const CodeLab = () => {
                             if (res.data.vcdBase64) {
                                 const rawVcd = atob(res.data.vcdBase64);
                                 setVcdText(rawVcd);
+                                setConsoleTab('waveform');
+                                setLoading(false);
                                 if (studioWindowRef.current && !studioWindowRef.current.closed) {
                                     studioWindowRef.current.postMessage({ type: 'load_vcd', vcd: rawVcd, lang }, '*');
                                 }
+                            } else {
+                                setLoading(false);
                             }
-                            setLoading(false);
                         } else if (res.data && res.data.status === 'RUNNING') {
                             if (attempts >= maxAttempts) {
                                 clearInterval(poll);
@@ -338,6 +402,13 @@ const CodeLab = () => {
         const win = window.open('/waveform', 'BitLabWaveformStudio',
             `width=${width},height=${height},top=${top},left=${left},status=no,menubar=no,toolbar=no`);
         studioWindowRef.current = win;
+
+        if (!win) {
+            setIsTerminalOpen(true);
+            setConsoleTab('waveform');
+            pushLog('*** Pop-up blocked — showing the waveform inline in the panel below. ***');
+            return;
+        }
 
         const handleSync = (event) => {
             if (event.data.type === 'studio_ready' && win && !win.closed) {
@@ -482,7 +553,7 @@ const CodeLab = () => {
                 </main>
 
                 {/* Terminal */}
-                <div className={`transition-all duration-500 ${isTerminalOpen ? 'h-[300px]' : 'h-10'} border-t border-border-main bg-bg-surface flex flex-col relative`}>
+                <div className={`transition-all duration-500 ${isTerminalOpen ? (consoleTab === 'waveform' ? 'h-[360px]' : 'h-[300px]') : 'h-10'} border-t border-border-main bg-bg-surface flex flex-col relative`}>
                     <div
                         onClick={() => setIsTerminalOpen(!isTerminalOpen)}
                         className="h-10 px-4 md:px-8 flex items-center justify-between cursor-pointer hover:bg-bg-surface-elevated transition-colors relative z-10"
@@ -500,28 +571,78 @@ const CodeLab = () => {
                     </div>
 
                     {isTerminalOpen && (
-                        <div ref={terminalRef} className="flex-1 overflow-y-auto p-4 md:p-6 leading-relaxed custom-scrollbar relative">
-                            {/* Scanline */}
-                            <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-emerald-500/[0.015] to-transparent opacity-10"></div>
-
-                            <div className="max-w-5xl relative z-10">
-                                {logEntries.length === 0 && !loading && (
-                                    <div className="flex items-center gap-3 text-text-muted/40 text-[11px] font-mono">
-                                        <TerminalIcon size={12} />
-                                        <span>Press <kbd className="px-1 py-0.5 rounded bg-bg-surface-elevated border border-border-main text-[10px]">Ctrl+Enter</kbd> or click Run Code to execute.</span>
-                                    </div>
+                        <>
+                            {/* Tab bar */}
+                            <div className="h-9 shrink-0 px-4 md:px-8 flex items-center gap-6 border-b border-border-main bg-bg-surface text-[10px] font-black uppercase tracking-[0.25em] z-10">
+                                <button
+                                    onClick={() => setConsoleTab('console')}
+                                    className={`h-full px-1 border-b-2 transition-colors ${
+                                        consoleTab === 'console'
+                                            ? 'text-accent border-accent'
+                                            : 'text-text-muted/60 border-transparent hover:text-text-main'
+                                    }`}
+                                >
+                                    Console
+                                </button>
+                                {waveformData.signals.length > 0 && (
+                                    <button
+                                        onClick={() => setConsoleTab('waveform')}
+                                        className={`h-full px-1 border-b-2 transition-colors ${
+                                            consoleTab === 'waveform'
+                                                ? 'text-emerald-400 border-emerald-400'
+                                                : 'text-text-muted/60 border-transparent hover:text-text-main'
+                                        }`}
+                                    >
+                                        Waveform ({waveformData.signals.length})
+                                    </button>
                                 )}
-                                {logEntries.map((entry, i) => (
-                                    <TerminalLine key={i} entry={entry} index={i} />
-                                ))}
-                                {loading && (
-                                    <div className="flex items-center space-x-4 mt-3">
-                                        <span className="w-1.5 h-4 bg-accent animate-pulse rounded-sm"></span>
-                                        <span className="text-accent font-black text-[10px] uppercase tracking-[0.3em]">Running Code...</span>
-                                    </div>
+                                {(lang === 'verilog' || lang === 'vhdl') && (
+                                    <button
+                                        onClick={openWaveformStudio}
+                                        disabled={!waveformData.signals.length}
+                                        className={`h-full px-1 border-b-2 border-transparent transition-colors ${
+                                            waveformData.signals.length
+                                                ? 'text-text-muted/60 hover:text-text-main'
+                                                : 'text-text-muted/25 cursor-not-allowed'
+                                        }`}
+                                    >
+                                        Open Studio
+                                    </button>
                                 )}
                             </div>
-                        </div>
+
+                            {consoleTab === 'waveform' && waveformData.signals.length > 0 ? (
+                                <div className="flex-1 min-h-0 relative">
+                                    <CanvasWaveform signals={waveformData.signals} maxTime={waveformData.maxTime} />
+                                </div>
+                            ) : (
+                                <div ref={terminalRef} className="flex-1 overflow-y-auto p-4 md:p-6 leading-relaxed custom-scrollbar relative">
+                                    {/* Scanline */}
+                                    <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-emerald-500/[0.015] to-transparent opacity-10"></div>
+
+                                    <div className="max-w-5xl relative z-10">
+                                        {logEntries.length === 0 && !loading && (
+                                            <div className="flex items-center gap-3 text-text-muted/40 text-[11px] font-mono">
+                                                <TerminalIcon size={12} />
+                                                <span>Press <kbd className="px-1 py-0.5 rounded bg-bg-surface-elevated border border-border-main text-[10px]">Ctrl+Enter</kbd> or click Run Code to execute.</span>
+                                            </div>
+                                        )}
+                                        {renderLogEntries(logEntries)}
+                                        {loading && (
+                                            <div className="flex items-center space-x-4 mt-3">
+                                                <span className="w-1.5 h-4 bg-accent animate-pulse rounded-sm"></span>
+                                                <span className="text-accent font-black text-[10px] uppercase tracking-[0.3em]">Running Code...</span>
+                                            </div>
+                                        )}
+                                        {!waveformData.signals.length && loading === false && lang !== 'qnx' && logEntries.length > 0 && (
+                                            <div className="mt-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-[11px] text-amber-300">
+                                                <Activity size={12} className="animate-pulse mr-2" /> No waveform trace detected. Ensure your testbench calls <code className="text-amber-100">$dumpfile</code> (Verilog) or uses GHDL --vcd (VHDL).
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
 
