@@ -6,6 +6,7 @@ import Sidebar from '../components/Sidebar';
 import api from '../services/api';
 import { useTheme } from '../context/ThemeContext';
 import CanvasWaveform from '../components/CanvasWaveform';
+import CodeQualityPanel from '../components/CodeQualityPanel';
 import { parseVCD } from '../utils/VCDParserCore';
 import {
     Play,
@@ -174,6 +175,9 @@ const CodeLab = () => {
     const [vcdText, setVcdText] = useState(null);
     const [consoleTab, setConsoleTab] = useState('console'); // 'console' | 'waveform'
     const [qnxWorkerStatus, setQnxWorkerStatus] = useState('unknown'); // 'checking' | 'online' | 'offline'
+    const [qualityReport, setQualityReport] = useState(null);
+    const [qualityLoading, setQualityLoading] = useState(false);
+    const qualityRequestRef = useRef(0);
     const terminalRef = useRef(null);
     const studioWindowRef = useRef(null);
     const designEditorRef = useRef(null);     // Monaco editor instance
@@ -233,6 +237,31 @@ const CodeLab = () => {
         const interval = setInterval(check, 30000); // re-ping every 30s
         return () => clearInterval(interval);
     }, [lang]);
+
+    // ── Live C code-quality analysis (debounced as the user types) ──
+    useEffect(() => {
+        if (lang !== 'qnx' || !designCode.trim()) {
+            qualityRequestRef.current++;
+            setQualityReport(null);
+            setQualityLoading(false);
+            return;
+        }
+
+        const requestId = ++qualityRequestRef.current;
+        setQualityLoading(true);
+        const timer = setTimeout(async () => {
+            try {
+                const res = await api.post('/quality/c', { code: designCode });
+                if (qualityRequestRef.current === requestId) setQualityReport(res.data);
+            } catch {
+                if (qualityRequestRef.current === requestId) setQualityReport(null);
+            } finally {
+                if (qualityRequestRef.current === requestId) setQualityLoading(false);
+            }
+        }, 450);
+
+        return () => clearTimeout(timer);
+    }, [designCode, lang]);
 
     useEffect(() => {
         const savedDesign = localStorage.getItem(`${lang}_design_v2`);
@@ -548,6 +577,13 @@ const CodeLab = () => {
                                     options={{ fontSize: 14, minimap: { enabled: false }, scrollBeyondLastLine: false, padding: { top: 20 } }}
                                 />
                             </div>
+                        </div>
+                    )}
+
+                    {/* Live code quality (QNX/C only) */}
+                    {lang === 'qnx' && (
+                        <div className="h-1/2 md:h-full md:w-[340px] md:flex-none flex flex-col min-h-0 border-t md:border-t-0 md:border-l border-border-main bg-bg-surface">
+                            <CodeQualityPanel report={qualityReport} loading={qualityLoading} />
                         </div>
                     )}
                 </main>
